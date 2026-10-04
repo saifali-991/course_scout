@@ -173,8 +173,8 @@ column is the thumbnail image — keep that in mind if you ever add `list_editab
 be in both lists (`admin.E121`).
 
 **Admin login:** the shared MySQL database has exactly **one** staff account —
-**`boss`** (the original `admin` account was renamed; `course1234` was *its*
-password and no longer applies). Django keeps only a one-way `pbkdf2_sha256`
+**`boss`** (the original `admin` account was renamed and its password rotated
+since). Django keeps only a one-way `pbkdf2_sha256`
 hash, so a forgotten password cannot be read back — set a new one with the
 helper script in the table below if `boss`'s password is unknown. To check
 *which* staff accounts exist and whether a candidate password matches (read-only,
@@ -203,7 +203,7 @@ never writes to the DB):
 > anything shorter than 8 characters, a common password, or all digits
 > (`1234` → *too short* + *too common* + *entirely numeric*). Pick e.g.
 > `Scout@2026pass`. `set_password()` (the script / one-liner above) skips those
-> validators, which is how the `course1234` local-dev value is kept in place;
+> validators, which is how a weak local-dev value gets kept in place;
 > **(4) a typo in the username** → `CommandError: user 'X' does not exist`
 > (although MySQL's case-insensitive collation here still matches `Admin` → `admin`).
 >
