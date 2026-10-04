@@ -25,6 +25,30 @@ export const API_BASE = (
   || (import.meta.env.DEV ? '/api' : `${BACKEND}/api`)   // '' + '/api' = same-origin
 ).replace(/\/+$/, '');
 
+/**
+ * Where the **Django** admin lives — the React bundle never renders it, so the
+ * SPA only needs to know which origin to hand the browser over to.
+ *
+ *   Render (two services) : VITE_API_URL=https://coursescout-api.onrender.com
+ *                           → https://coursescout-api.onrender.com/admin/
+ *   Docker / nginx, dev   : the API base is relative ('/api') and the reverse
+ *                           proxy forwards /admin to Django → '/admin/' on this
+ *                           very origin (nginx.conf / vite.config.js).
+ *
+ * Used by src/pages/AdminRedirect.jsx (the `/admin` route). An unparsable or
+ * missing base falls back to same-origin, which is what a single-host setup
+ * wants anyway.
+ */
+export const ADMIN_URL = (() => {
+  const raw = (import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL || '').trim();
+  if (!raw) return '/admin/';
+  try {
+    return `${new URL(raw, window.location.origin).origin}/admin/`;
+  } catch {
+    return '/admin/';
+  }
+})();
+
 export class ApiError extends Error {
   constructor(message, { status = 0, url = '' } = {}) {
     super(message);

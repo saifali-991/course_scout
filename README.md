@@ -172,9 +172,15 @@ opens the edit form (`list_display_links = ('title',)` in `resources/admin.py`),
 column is the thumbnail image — keep that in mind if you ever add `list_editable`: a field cannot
 be in both lists (`admin.E121`).
 
-**Admin login:** this checkout ships one staff account — **`admin` / `course1234`**
-(local dev only, verified working). There is no other staff user, so that is the
-one to use. To change the **password or the username**:
+**Admin login:** the shared MySQL database has exactly **one** staff account —
+**`boss`** (the original `admin` account was renamed; `course1234` was *its*
+password and no longer applies). Django keeps only a one-way `pbkdf2_sha256`
+hash, so a forgotten password cannot be read back — set a new one with the
+helper script in the table below if `boss`'s password is unknown. To check
+*which* staff accounts exist and whether a candidate password matches (read-only,
+never writes to the DB):
+`myenv\Scripts\python.exe backend\tools\check_admin_login.py`. To change the
+**password or the username**:
 
 | Where | How |
 |---|---|
@@ -244,7 +250,7 @@ docker compose up --build     # first run builds both images (a few minutes)
 | URL | What |
 |---|---|
 | **http://localhost** | the React site (nginx, port 80) |
-| **http://localhost/admin** | Django admin — `admin` / `course1234` |
+| **http://localhost/admin** | Django admin — log in with the staff account of the DB in use (`boss` when Compose points at the root `.env`'s MySQL; a fresh container DB needs `python manage.py createsuperuser`) |
 | **http://localhost:8000** | backend directly (gunicorn — optional, for debugging) |
 
 First boot runs automatically: migrations → **seeds the bundled
@@ -367,6 +373,14 @@ Notes for a first deploy:
   otherwise the browser calls are blocked (that is the CORS error you would see in the console).
   One variable is enough — the admin login's CSRF list is derived from it in `settings.py`.
 * `.env` is never uploaded — Render only uses the dashboard variables.
+* **The admin panel is served by the API service, not the static site.**
+  `https://coursescout-web.onrender.com/admin` is a React Router route
+  (`src/pages/AdminRedirect.jsx`) that immediately forwards to
+  `https://coursescout-api.onrender.com/admin/` — before that route existed,
+  `/admin` matched nothing in the SPA and the page rendered blank white.
+  Bookmark either URL; both land on the same Django login. If the redirect page
+  complains that the admin address is not configured, `VITE_API_URL` is empty on
+  the web service — set it and redeploy (Vite bakes it into the bundle).
 
 ---
 
