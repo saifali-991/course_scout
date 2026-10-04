@@ -1,0 +1,27 @@
+# Keep the build context small and make sure secrets/derived files never
+# enter the image (they are baked into layers and can leak through `docker cp`).
+
+# Secrets / machine-specific config — passed at runtime instead (compose/env)
+.env
+.env.*
+!.env.example
+
+# Python noise
+__pycache__/
+*.py[cod]
+*.pyo
+*.log
+
+# Generated output
+staticfiles/
+media/
+db.sqlite3
+
+# Local tooling that has nothing to do in the image
+myenv/
+.venv/
+venv/
+.vscode/
+.idea/
+.git/
+.gitignore

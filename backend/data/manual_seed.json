@@ -1,0 +1,49 @@
+{
+  "_readme": [
+    "MANUAL SEED — for Unacademy & Physics Wallah courses (per project rules these",
+    "platforms are NEVER scraped; you fill this file by hand).",
+    "",
+    "HOW TO USE:",
+    "1. Add 20-30 entries to the 'entries' list below using the same schema.",
+    "2. Copy a real course link from the Unacademy / Physics Wallah (or PW Skills) site.",
+    "3. 'platform' must be 'unacademy' or 'physics_wallah'.",
+    "4. 'category' must be one of: python, web-development, data-analytics,",
+    "   ai-machine-learning, ui-ux-design, digital-marketing.",
+    "5. thumbnail_url is optional — leave empty to auto-generate a clean placeholder.",
+    "6. Re-run:  python manage.py import_resources --only manual",
+    "",
+    "The two entries below are EXAMPLES — replace them with real courses."
+  ],
+  "entries": [
+    {
+      "title": "EXAMPLE — Data Science Bootcamp (replace with real course)",
+      "url": "https://www.pwskills.com/",
+      "provider": "Physics Wallah",
+      "platform": "physics_wallah",
+      "category": "data-analytics",
+      "is_free": false,
+      "price": 3500,
+      "rating": 4.5,
+      "level": "beginner",
+      "duration_text": "6 months",
+      "resource_type": "course",
+      "description": "Example entry. Replace the URL and details with a real PW Skills / Physics Wallah batch page.",
+      "thumbnail_url": ""
+    },
+    {
+      "title": "EXAMPLE — Web Development Course (replace with real course)",
+      "url": "https://unacademy.com/",
+      "provider": "Unacademy",
+      "platform": "unacademy",
+      "category": "web-development",
+      "is_free": false,
+      "price": 2000,
+      "rating": 4.3,
+      "level": "beginner",
+      "duration_text": "4 months",
+      "resource_type": "course",
+      "description": "Example entry. Replace the URL and details with a real Unacademy course/batch page.",
+      "thumbnail_url": ""
+    }
+  ]
+}

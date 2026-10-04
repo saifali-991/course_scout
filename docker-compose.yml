@@ -1,0 +1,88 @@
+# CourseScout — full stack with one command:
+#
+#     docker compose up --build
+#
+#     site  →  http://localhost            (nginx: React bundle + /api proxy)
+#     api   →  http://localhost:8000       (Django/gunicorn, optional)
+#     db    →  MySQL 8, internal only (not published to your machine)
+#
+# First boot: creates the tables, then loads data/curated_courses_*.json so the
+# UI has real content straight away. The MySQL data lives in the `mysql_data`
+# volume, so later boots keep everything (including your admin edits).
+#
+# Port clash?  FRONTEND_PORT=8080 BACKEND_PORT=8001 docker compose up --build
+# All values below can also go in a root `.env` file (git-ignored).
+
+name: coursescout
+
+services:
+  # ---------- MySQL (internal, never exposed to the host) ----------
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-coursescout}
+      MYSQL_DATABASE: ${DB_NAME:-learning_platform}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      # $$ = escaped for compose; the shell inside the container reads the env var
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 40
+      start_period: 20s
+
+  # ---------- Django API ----------
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      SECRET_KEY: ${SECRET_KEY:-compose-local-only-change-me}
+      DEBUG: ${DEBUG:-True}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
+      # Needed only if you bake an absolute VITE_API_URL into the frontend.
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost,http://localhost:5173,http://127.0.0.1:5173}
+      # Point at your own MySQL instead of the bundled one, e.g.
+      #   DB_HOST=host.docker.internal DB_PASSWORD=password docker compose up
+      DB_HOST: ${DB_HOST:-db}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_NAME: ${DB_NAME:-learning_platform}
+      DB_USER: ${DB_USER:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-coursescout}
+      SEED_ON_FIRST_RUN: ${SEED_ON_FIRST_RUN:-1}
+      # Seed only while the DB has fewer rows than this (1 = strictly empty).
+      SEED_IF_ROWS_BELOW: ${SEED_IF_ROWS_BELOW:-1}
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    extra_hosts:
+      # lets DB_HOST=host.docker.internal reach MySQL on your host machine
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/api/stats/').status==200 else 1)\""]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 30s
+
+  # ---------- React bundle behind nginx ----------
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # Leave empty → the bundle calls the same origin (/api) and nginx
+        # proxies it to Django (no CORS anywhere). Set it to
+        # http://localhost:8000 if you want the browser to call Django directly.
+        VITE_API_URL: ${VITE_API_URL:-}
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-80}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  mysql_data:

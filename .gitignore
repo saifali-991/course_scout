@@ -1,0 +1,37 @@
+# --- Python / Django ---
+myenv/
+*.pyc
+__pycache__/
+*.py[cod]
+backend/db.sqlite3
+backend/media/
+backend/staticfiles/
+
+# --- Environment secrets ---
+# .env files hold machine-specific values (DB password, API URL). The committed
+# sample is frontend/.env.example — copy it, never commit the copy.
+.env
+.env.local
+.env.*.local
+backend/.env
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+
+# --- Node / React ---
+node_modules/
+frontend/dist/
+frontend/node_modules/
+npm-debug.log*
+frontend/dev.log
+frontend/dev.err.log
+
+# --- Generated video frames (analysis artifacts) ---
+video/frames/
+video/frames_1s/
+
+# --- OS / Editor ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

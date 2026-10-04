@@ -1,0 +1,21 @@
+# One line-ending rule for every checkout, so files that run *outside* Windows
+# (Docker build, nginx config, Render's Linux checkout, shell entrypoints) never
+# carry \r. A CRLF Dockerfile fails with `unknown instruction` and a CRLF
+# docker-entrypoint.sh fails with `\r: command not found`.
+* text=auto
+
+*.sh        text eol=lf
+Dockerfile  text eol=lf
+*.conf      text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.py        text eol=lf
+*.js        text eol=lf
+*.jsx       text eol=lf
+*.css       text eol=lf
+*.json      text eol=lf
+*.md        text eol=lf
+
+# Windows-only files keep CRLF
+*.bat       text eol=crlf
+*.ps1       text eol=crlf

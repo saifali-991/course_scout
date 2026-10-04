@@ -1,0 +1,16 @@
+# Keep the build context tiny — nothing here belongs in an image layer.
+
+node_modules/
+dist/
+build/
+
+# Secrets / machine-specific config — passed at build time instead (compose ARG)
+.env
+.env.*
+!.env.example
+
+*.log
+.vscode/
+.idea/
+.git/
+.gitignore
