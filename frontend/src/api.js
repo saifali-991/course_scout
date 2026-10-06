@@ -110,6 +110,74 @@ async function request(path, params = {}) {
   return res.json();
 }
 
+/**
+ * POST JSON to the API, optionally carrying the auth token.
+ *
+ * Error bodies from DRF look like `{"password": ["…too short…"]}` or
+ * `{"detail": "…"}` — flatten every value into one readable message so the
+ * auth modal can show it directly under the form.
+ */
+async function post(path, body = {}, token = null) {
+  const url = new URL(`${API_BASE}${path}`, window.location.origin);
+  const headers = { 'Content-Type': 'application/json' };
+  if (token) headers.Authorization = `Token ${token}`;
+
+  let res;
+  try {
+    res = await fetch(url.toString(), {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+    });
+  } catch (err) {
+    throw new ApiError(err?.message || 'network error', { status: 0, url: url.toString() });
+  }
+
+  if (!res.ok) {
+    // Read the body once, then try to flatten DRF's field-error JSON
+    // ({"password": ["…too short…"]}) into one readable message.
+    const text = await res.text().catch(() => '');
+    let message = '';
+    try {
+      const data = JSON.parse(text);
+      if (data && typeof data === 'object') {
+        message = Object.values(data)
+          .flat()
+          .map(String)
+          .join(' ');
+      }
+    } catch {
+      /* non-JSON body — use the raw snippet below */
+    }
+    throw new ApiError(
+      message.trim() || snippet(text) || res.statusText || 'request failed',
+      { status: res.status, url: url.toString() },
+    );
+  }
+
+  if (res.status === 204) return null; // logout has no body
+  return res.json();
+}
+
+/** GET with the stored token attached — used by /api/auth/me/. */
+async function getWithAuth(path, token) {
+  const url = new URL(`${API_BASE}${path}`, window.location.origin);
+  let res;
+  try {
+    res = await fetch(url.toString(), { headers: { Authorization: `Token ${token}` } });
+  } catch (err) {
+    throw new ApiError(err?.message || 'network error', { status: 0, url: url.toString() });
+  }
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    throw new ApiError(snippet(body) || res.statusText || 'request failed', {
+      status: res.status,
+      url: url.toString(),
+    });
+  }
+  return res.json();
+}
+
 export const api = {
   /** GET /api/resources/ — search / filter / paginate */
   resources: ({
@@ -162,4 +230,18 @@ export const api = {
   /** GET /api/recommendations/?interests=python,ai */
   recommendations: (interests = []) =>
     request('/recommendations/', { interests: interests.join(','), page_size: 4 }),
+
+  // ---------------- Auth (token stored by hooks/useAuth.js) ----------------
+
+  /** POST /api/auth/register/ — {username, email, password} → {token, user} */
+  register: (payload) => post('/auth/register/', payload),
+
+  /** POST /api/auth/login/ — {identifier, password} (username OR email) → {token, user} */
+  login: (payload) => post('/auth/login/', payload),
+
+  /** POST /api/auth/logout/ — revoke the token (204, no body) */
+  logout: (token) => post('/auth/logout/', {}, token),
+
+  /** GET /api/auth/me/ — current user for a stored token */
+  me: (token) => getWithAuth('/auth/me/', token),
 };

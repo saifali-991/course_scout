@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { PlayIcon } from './Icons.jsx';
+import AuthModal from './AuthModal.jsx';
+import useAuth from '../hooks/useAuth.js';
 
 const links = [
   { to: '/', label: 'Discover' },
@@ -10,11 +12,16 @@ const links = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  // null = closed, 'login' | 'register' = which AuthModal tab to show
+  const [authTab, setAuthTab] = useState(null);
+  const { user, isAuthenticated, logout } = useAuth();
+
+  const closeMenu = () => setOpen(false);
 
   return (
     <header className={`navbar ${open ? 'navbar--open' : ''}`}>
       <div className="container navbar__inner">
-        <Link to="/" className="brand" onClick={() => setOpen(false)}>
+        <Link to="/" className="brand" onClick={closeMenu}>
           <span className="brand__mark">
             <PlayIcon size={18} />
           </span>
@@ -30,20 +37,82 @@ export default function Navbar() {
               to={l.to}
               end={l.to === '/'}
               className={({ isActive }) => `nav__link ${isActive ? 'nav__link--active' : ''}`}
-              onClick={() => setOpen(false)}
+              onClick={closeMenu}
             >
               {l.label}
             </NavLink>
           ))}
+          {/* Desktop par .nav__signin chhupa deta hai ye (860px CSS) — burger
+              menu ke andar se mobile users bhi sign in / sign out kar sakte hain. */}
+          {isAuthenticated ? (
+            <button
+              type="button"
+              className="nav__link nav__authlink"
+              onClick={() => {
+                closeMenu();
+                logout();
+              }}
+            >
+              Sign out
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="nav__link nav__authlink"
+              onClick={() => {
+                closeMenu();
+                setAuthTab('login');
+              }}
+            >
+              Sign in
+            </button>
+          )}
         </nav>
 
         <div className="nav__actions">
-          <a className="nav__signin" href="#signin">
-            Sign in
-          </a>
-          <a className="btn btn--primary" href="#join">
-            Join free
-          </a>
+          {isAuthenticated ? (
+            <>
+              <span className="nav__user" title={user?.email || user?.username}>
+                <span className="nav__avatar">
+                  {(user?.username || '?').charAt(0).toUpperCase()}
+                </span>
+                <span className="nav__username">{user?.username}</span>
+              </span>
+              <button
+                type="button"
+                className="nav__signin"
+                onClick={() => {
+                  closeMenu();
+                  logout();
+                }}
+              >
+                Sign out
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                className="nav__signin"
+                onClick={() => {
+                  closeMenu();
+                  setAuthTab('login');
+                }}
+              >
+                Sign in
+              </button>
+              <button
+                type="button"
+                className="btn btn--primary"
+                onClick={() => {
+                  closeMenu();
+                  setAuthTab('register');
+                }}
+              >
+                Join free
+              </button>
+            </>
+          )}
           <button
             className="nav__burger"
             aria-label="Toggle menu"
@@ -66,6 +135,10 @@ export default function Navbar() {
           </button>
         </div>
       </div>
+
+      {authTab && (
+        <AuthModal initialTab={authTab} onClose={() => setAuthTab(null)} />
+      )}
     </header>
   );
 }

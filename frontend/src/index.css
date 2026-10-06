@@ -1097,6 +1097,228 @@ img { display: block; max-width: 100%; }
   border-radius: 10px;
 }
 
+/* ---------------- Navbar: signed-in state ---------------- */
+
+.nav__user {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.nav__avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--blue-soft);
+  color: var(--blue);
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.nav__username {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--navy);
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav__signin {
+  /* inherits .nav__signin above; it's a <button> now, so kill UA styles */
+  padding: 0;
+}
+
+/* Sign in inside the burger menu — desktop hides it (the header shows one). */
+.nav__authlink {
+  display: none;
+}
+
+/* ---------------- Auth modal ---------------- */
+
+.authmodal__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.authmodal {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 36px 32px 30px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+
+.authmodal__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: var(--slate);
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.authmodal__close:hover {
+  background: #f1f5fb;
+  color: var(--navy);
+}
+
+.authmodal__mark {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  background: var(--blue);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(29, 111, 242, 0.35);
+  margin: 0 auto 18px;
+}
+
+.authmodal__mark svg { margin-left: 2px; }
+
+.authmodal__tabs {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  background: #f1f5fb;
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 22px;
+}
+
+.authmodal__tab {
+  flex: 1;
+  padding: 9px 14px;
+  border-radius: 9px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--slate);
+  transition: all 0.18s ease;
+}
+
+.authmodal__tab--active {
+  background: var(--white);
+  color: var(--navy);
+  box-shadow: var(--shadow-sm);
+}
+
+.authmodal__title {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  text-align: center;
+}
+
+.authmodal__subtitle {
+  margin-top: 6px;
+  font-size: 14.5px;
+  color: var(--slate);
+  text-align: center;
+}
+
+.authmodal__form {
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.authmodal__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.authmodal__field em {
+  font-weight: 500;
+  color: var(--slate-light);
+  font-style: normal;
+}
+
+.authmodal__field input {
+  font: inherit;
+  font-weight: 400;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--navy);
+  outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.authmodal__field input::placeholder { color: var(--slate-light); }
+
+.authmodal__field input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(29, 111, 242, 0.15);
+}
+
+.authmodal__error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--red);
+  background: #fef2f2;
+  border: 1px solid #fee2e2;
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.authmodal__error svg { flex-shrink: 0; margin-top: 2px; }
+
+.authmodal__submit {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.authmodal__submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.authmodal__switch {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 14.5px;
+  color: var(--slate);
+}
+
+.authmodal__switch button {
+  color: var(--blue);
+  font-weight: 600;
+  font-size: inherit;
+}
+
+.authmodal__switch button:hover { text-decoration: underline; }
+
 /* ---------------- Responsive ---------------- */
 
 @media (max-width: 1024px) {
@@ -1114,6 +1336,10 @@ img { display: block; max-width: 100%; }
   .nav__signin { display: none; }
 
   .nav__burger { display: flex; }
+
+  /* Burger menu khula tabhi sign in/out ka link dikhao — header wala
+     .nav__signin to upar hide ho chuka hai. */
+  .nav__authlink { display: block; }
 
   .navbar--open .nav__links {
     display: flex;
@@ -1147,6 +1373,11 @@ img { display: block; max-width: 100%; }
     flex-direction: column;
     align-items: flex-start;
   }
+
+  /* Sirf avatar bachao — jagah kam hai. */
+  .nav__username { display: none; }
+
+  .authmodal { padding: 30px 20px 26px; }
 }
 
 

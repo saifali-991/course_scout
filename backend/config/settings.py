@@ -56,10 +56,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # third-party
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
     'django_filters',
     # local
     'resources',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -119,6 +121,14 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'resources.pagination.ResourcesPagination',
     'PAGE_SIZE': 8,
     'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny'],
+    # Token first so `Authorization: Token …` works from the React app on any
+    # origin (Render serves the site and API as two services — session cookies
+    # would hit CORS/SameSite problems). Session stays second so DRF's browsable
+    # API can still log in via the Django admin session.
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
