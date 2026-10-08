@@ -1,24 +1,51 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { AlertIcon, PlayIcon } from './Icons.jsx';
 import useAuth from '../hooks/useAuth.js';
 
+const CLIENT_ID = (import.meta.env.VITE_GOOGLE_CLIENT_ID || '').trim();
+const GSI_SRC = 'https://accounts.google.com/gsi/client';
+
+/** Load Google Identity Services once (Promise so init can wait for it). */
+function loadGsiScript() {
+  return new Promise((resolve, reject) => {
+    if (window.google && window.google.accounts && window.google.accounts.id) {
+      resolve();
+      return;
+    }
+    const existing = document.querySelector('script[src="' + GSI_SRC + '"]');
+    if (existing) {
+      existing.addEventListener('load', () => resolve());
+      existing.addEventListener('error', () => reject(new Error('Could not load Google sign-in')));
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = GSI_SRC;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('Could not load Google sign-in'));
+    document.head.appendChild(script);
+  });
+}
+
 /**
- * Sign in / Join free dialog — opened from the Navbar buttons.
+ * "Sign in with Google" dialog - opened from the Navbar buttons.
  *
- * Two tabs share one card; submitting calls useAuth().login/register, which
- * stores the DRF token and flips the Navbar to the signed-in state. Errors
- * (wrong password, username taken, backend down) render inline under the form.
+ * Google Identity Services renders the official button inside this card; its
+ * callback hands us an ID token (credential) which we POST to /api/auth/google/
+ * for verification. The backend answers with our DRF token -> useAuth stores
+ * it and the Navbar flips to the signed-in state. No password forms anywhere.
  */
-export default function AuthModal({ initialTab = 'login', onClose }) {
-  const { login, register } = useAuth();
-  const [tab, setTab] = useState(initialTab === 'register' ? 'register' : 'login');
-  const [identifier, setIdentifier] = useState(''); // login: username or email
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [busy, setBusy] = useState(false);
+export default function AuthModal({ onClose }) {
+  const { loginWithGoogle } = useAuth();
   const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const buttonRef = useRef(null);
+  // Latest handlers without re-running the render effect (onClose is an
+  // inline arrow from Navbar - re-running would rebuild the Google button).
+  const handlersRef = useRef({});
+  handlersRef.current = { loginWithGoogle, onClose };
 
   // Escape closes the dialog; body scroll locks while it's open.
   useEffect(() => {
@@ -34,35 +61,61 @@ export default function AuthModal({ initialTab = 'login', onClose }) {
     };
   }, [onClose]);
 
-  const switchTab = (next) => {
-    setTab(next);
-    setError('');
-  };
+  // Load Google's script, initialize, and render the official button once.
+  useEffect(() => {
+    let cancelled = false;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (busy) return;
-    setError('');
-    setBusy(true);
-    try {
-      if (tab === 'login') {
-        await login(identifier.trim(), password);
-      } else {
-        await register({
-          username: username.trim(),
-          email: email.trim(),
-          password,
-        });
-      }
-      onClose();
-    } catch (err) {
-      setError(err?.message || 'Something went wrong. Please try again.');
-    } finally {
-      setBusy(false);
+    if (!CLIENT_ID) {
+      setError(
+        'Google sign-in is not configured yet - set VITE_GOOGLE_CLIENT_ID in the frontend env and rebuild.',
+      );
+      return () => {
+        cancelled = true;
+      };
     }
-  };
 
-  // Portal out of <header> — the navbar's `backdrop-filter` would otherwise
+    loadGsiScript()
+      .then(() => {
+        if (cancelled || !buttonRef.current || !window.google) return;
+        window.google.accounts.id.initialize({
+          client_id: CLIENT_ID,
+          callback: async ({ credential }) => {
+            setBusy(true);
+            setError('');
+            try {
+              await handlersRef.current.loginWithGoogle(credential);
+              handlersRef.current.onClose();
+            } catch (err) {
+              setError((err && err.message) || 'Google sign-in failed. Please try again.');
+            } finally {
+              setBusy(false);
+            }
+          },
+          error_callback: (err) => {
+            // User closing the account chooser is normal - stay quiet.
+            if (err && err.type !== 'popup_closed') {
+              setError('Google sign-in could not start (' + (err.type || 'unknown error') + ').');
+            }
+          },
+        });
+        // Empty first: React StrictMode runs effects twice in dev.
+        buttonRef.current.innerHTML = '';
+        window.google.accounts.id.renderButton(buttonRef.current, {
+          theme: 'outline',
+          size: 'large',
+          width: 340,
+          text: 'signin_with',
+        });
+      })
+      .catch((err) => {
+        if (!cancelled) setError((err && err.message) || 'Could not load Google sign-in.');
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  // Portal out of <header> - the navbar's `backdrop-filter` would otherwise
   // become the containing block for this position:fixed backdrop and clip the
   // modal to the 76px-tall header.
   return createPortal(
@@ -73,7 +126,7 @@ export default function AuthModal({ initialTab = 'login', onClose }) {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="authmodal" role="dialog" aria-modal="true" aria-label="Account">
+      <div className="authmodal" role="dialog" aria-modal="true" aria-label="Sign in">
         <button type="button" className="authmodal__close" aria-label="Close" onClick={onClose}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <line x1="6" y1="6" x2="18" y2="18" />
@@ -85,120 +138,25 @@ export default function AuthModal({ initialTab = 'login', onClose }) {
           <PlayIcon size={18} />
         </span>
 
-        <div className="authmodal__tabs" role="tablist">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={tab === 'login'}
-            className={`authmodal__tab ${tab === 'login' ? 'authmodal__tab--active' : ''}`}
-            onClick={() => switchTab('login')}
-          >
-            Sign in
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={tab === 'register'}
-            className={`authmodal__tab ${tab === 'register' ? 'authmodal__tab--active' : ''}`}
-            onClick={() => switchTab('register')}
-          >
-            Join free
-          </button>
-        </div>
-
-        <h2 className="authmodal__title">
-          {tab === 'login' ? 'Welcome back' : 'Create your account'}
-        </h2>
+        <h2 className="authmodal__title">Sign in to CourseScout</h2>
         <p className="authmodal__subtitle">
-          {tab === 'login'
-            ? 'Sign in to pick up where you left off.'
-            : 'Free forever — save courses and get recommendations.'}
+          Save courses, get recommendations and more - one click with Google.
         </p>
 
-        <form className="authmodal__form" onSubmit={handleSubmit}>
-          {tab === 'login' ? (
-            <label className="authmodal__field">
-              <span>Username or email</span>
-              <input
-                type="text"
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
-                placeholder="e.g. harry or harry@example.com"
-                autoComplete="username"
-                required
-                autoFocus
-              />
-            </label>
-          ) : (
-            <>
-              <label className="authmodal__field">
-                <span>Username</span>
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="letters and numbers only"
-                  autoComplete="username"
-                  pattern="[A-Za-z0-9]+"
-                  title="Username can only contain letters and numbers"
-                  required
-                  autoFocus
-                />
-              </label>
-              <label className="authmodal__field">
-                <span>Email <em>(optional)</em></span>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  autoComplete="email"
-                />
-              </label>
-            </>
-          )}
-
-          <label className="authmodal__field">
-            <span>Password</span>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder={tab === 'register' ? 'At least 8 characters' : 'Your password'}
-              autoComplete={tab === 'login' ? 'current-password' : 'new-password'}
-              minLength={tab === 'register' ? 8 : undefined}
-              required
-            />
-          </label>
-
+        <div className="authmodal__google">
+          <div ref={buttonRef} className="authmodal__gbutton" />
+          {busy && <p className="authmodal__busy">Signing you in...</p>}
           {error && (
             <p className="authmodal__error" role="alert">
               <AlertIcon size={16} />
               <span>{error}</span>
             </p>
           )}
+        </div>
 
-          <button type="submit" className="btn btn--primary authmodal__submit" disabled={busy}>
-            {busy ? 'Please wait…' : tab === 'login' ? 'Sign in' : 'Create account'}
-          </button>
-        </form>
-
-        <p className="authmodal__switch">
-          {tab === 'login' ? (
-            <>
-              New to CourseScout?{' '}
-              <button type="button" onClick={() => switchTab('register')}>
-                Join free
-              </button>
-            </>
-          ) : (
-            <>
-              Already have an account?{' '}
-              <button type="button" onClick={() => switchTab('login')}>
-                Sign in
-              </button>
-            </>
-          )}
+        <p className="authmodal__note">
+          Your CourseScout account is created automatically from your Google
+          email - no password to remember.
         </p>
       </div>
     </div>,

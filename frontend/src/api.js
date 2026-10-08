@@ -233,13 +233,9 @@ export const api = {
 
   // ---------------- Auth (token stored by hooks/useAuth.js) ----------------
 
-  /** POST /api/auth/register/ — {username, email, password} → {token, user} */
-  register: (payload) => post('/auth/register/', payload),
-
-  /** POST /api/auth/login/ — {identifier, password} (username OR email) → {token, user} */
-  login: (payload) => post('/auth/login/', payload),
-
-  /** POST /api/auth/logout/ — revoke the token (204, no body) */
+  /** POST /api/auth/google/ - Google ID token credential -> {token, user} */
+  googleLogin: (credential) => post('/auth/google/', { credential }),
+/** POST /api/auth/logout/ — revoke the token (204, no body) */
   logout: (token) => post('/auth/logout/', {}, token),
 
   /** GET /api/auth/me/ — current user for a stored token */

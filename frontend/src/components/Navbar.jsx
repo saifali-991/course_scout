@@ -137,7 +137,7 @@ export default function Navbar() {
       </div>
 
       {authTab && (
-        <AuthModal initialTab={authTab} onClose={() => setAuthTab(null)} />
+        <AuthModal onClose={() => setAuthTab(null)} />
       )}
     </header>
   );

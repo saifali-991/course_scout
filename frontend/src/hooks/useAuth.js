@@ -26,7 +26,7 @@ function writeSession(session) {
       localStorage.removeItem(USER_KEY);
     }
   } catch {
-    /* storage unavailable (private mode) — session stays in-memory only */
+    /* storage unavailable (private mode) - session stays in-memory only */
   }
   window.dispatchEvent(new Event(EVENT));
 }
@@ -34,8 +34,10 @@ function writeSession(session) {
 /**
  * Login state shared by the whole app (Navbar, AuthModal).
  *
- * The DRF token lives in localStorage — same event-driven sync pattern as
- * useSaved.js, so every component sees login/logout immediately.
+ * Sign-in is Google-only: AuthModal gets an ID token (credential) from
+ * Google Identity Services and hands it to loginWithGoogle(). The backend
+ * verifies it and returns our DRF token, stored here in localStorage -
+ * same event-driven sync pattern as useSaved.js.
  */
 export default function useAuth() {
   const [session, setSession] = useState(() => readSession());
@@ -51,9 +53,9 @@ export default function useAuth() {
     };
   }, []);
 
-  // Validate a stored token against /api/auth/me/ once on mount — a token
+  // Validate a stored token against /api/auth/me/ once on mount - a token
   // revoked server-side (logout elsewhere, user deleted) shouldn't leave a
-  // stale "Hi, …" in the navbar. Network errors keep the optimistic session:
+  // stale "Hi, ..." in the navbar. Network errors keep the optimistic session:
   // the API may just be briefly unreachable.
   const token = session?.token;
   useEffect(() => {
@@ -68,7 +70,7 @@ export default function useAuth() {
         if (!cancelled) writeSession({ token, user: data.user });
       })
       .catch((err) => {
-        // 401/403 = token no longer valid → sign out; anything else keep going.
+        // 401/403 = token no longer valid -> sign out; anything else keep going.
         if (!cancelled && err && (err.status === 401 || err.status === 403)) {
           writeSession(null);
         }
@@ -81,14 +83,9 @@ export default function useAuth() {
     };
   }, [token]);
 
-  const login = useCallback(async (identifier, password) => {
-    const data = await api.login({ identifier, password });
-    writeSession(data);
-    return data.user;
-  }, []);
-
-  const register = useCallback(async ({ username, email, password }) => {
-    const data = await api.register({ username, email, password });
+  /** Exchange Google's ID token for our DRF token (signs in OR signs up). */
+  const loginWithGoogle = useCallback(async (credential) => {
+    const data = await api.googleLogin(credential);
     writeSession(data);
     return data.user;
   }, []);
@@ -101,7 +98,7 @@ export default function useAuth() {
       try {
         await api.logout(current.token);
       } catch {
-        /* token already invalid server-side — nothing left to do */
+        /* token already invalid server-side - nothing left to do */
       }
     }
   }, []);
@@ -111,8 +108,7 @@ export default function useAuth() {
     token: session?.token ?? null,
     isAuthenticated: !!session,
     checking,
-    login,
-    register,
+    loginWithGoogle,
     logout,
   };
 }

@@ -45,6 +45,12 @@ if DEBUG and '*' not in ALLOWED_HOSTS:
     # Ignored when DEBUG=False — production must set ALLOWED_HOSTS in .env.
     ALLOWED_HOSTS.append('*')
 
+# --- Google OAuth ("Sign in with Google") ------------------------------------
+# Web application Client ID from Google Cloud Console -> APIs & Services ->
+# Credentials. Public by design (the browser gets VITE_GOOGLE_CLIENT_ID too);
+# the backend uses it as the expected aud when verifying the ID token. Empty
+# -> /api/auth/google/ answers 500 "not configured".
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '')
 # --- Applications ------------------------------------------------------------
 
 INSTALLED_APPS = [

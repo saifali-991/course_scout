@@ -23,6 +23,10 @@ COPY . .
 ARG VITE_API_URL=
 ENV VITE_API_URL=${VITE_API_URL}
 
+# Public Google OAuth Web client ID (safe to bake into the JS bundle - it only
+# identifies the app; empty -> the Sign-in button shows a not-configured hint).
+ARG VITE_GOOGLE_CLIENT_ID=
+ENV VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID}
 RUN npm run build
 
 # ---------- Stage 2: serve with nginx ----------

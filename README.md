@@ -549,3 +549,37 @@ cd d:\Course_Scout\backend
 
 *Built for the Course_Scout project — Django + DRF + MySQL + React (Vite).*
 
+
+
+---
+
+## Google Sign-in setup ("Sign in with Google")
+
+The site signs users in **only** with Google (no password forms). To turn it on:
+
+1. Open [Google Cloud Console](https://console.cloud.google.com/apis/credentials) with your Google account → **APIs & Services → OAuth consent screen**
+   → configure it once (External, app name, your email; add yourself under **Test users**).
+2. **APIs & Services → Credentials → Create credentials → OAuth client ID → Web application**
+
+   * **Authorized JavaScript origins**
+
+     ```
+     http://localhost
+     https://coursescout-web.onrender.com   # your Render site URL (after first deploy)
+     ```
+   * Redirect URIs: leave empty (the popup flow does not need one).
+3. Copy the **Client ID** (ends with `.apps.googleusercontent.com`) — the SAME value goes in two places:
+
+   | Where | Key |
+   |---|---|
+   | root `.env` (local Docker) | `GOOGLE_CLIENT_ID=` **and** `VITE_GOOGLE_CLIENT_ID=` |
+   | Render → coursescout-api service | `GOOGLE_CLIENT_ID` (Environment tab) |
+   | Render → coursescout-web service | `VITE_GOOGLE_CLIENT_ID` (Environment tab) |
+
+4. Rebuild locally: `docker compose up --build -d` (Vite bakes the value at **build** time).
+
+Until the Client ID is set, the modal shows a clear "not configured" hint and the API answers `500` on `/api/auth/google/`.
+
+Flow: browser gets a Google ID token (`credential`) → `POST /api/auth/google/` → backend verifies it with `google-auth` against your Client ID (signature + expiry + audience) → account is created on first login (username derived from the email) → DRF token stored in localStorage.
+
+---

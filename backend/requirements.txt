@@ -11,3 +11,7 @@ whitenoise==6.8.2
 # MySQL driver — mysqlclient preferred; if it fails to build on your
 # machine, `pip install PyMySQL` also works (settings.py auto-detects it).
 mysqlclient
+
+# Google OAuth - verifies the ID token that the Sign in with Google button
+# sends to /api/auth/google/ (official library: signature, expiry, aud checks).
+google-auth
