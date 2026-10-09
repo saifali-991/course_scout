@@ -7,6 +7,7 @@ import ToggleGroup from '../components/ToggleGroup.jsx';
 import TopicsDropdown from '../components/TopicsDropdown.jsx';
 import CreatorsDropdown from '../components/CreatorsDropdown.jsx';
 import Pagination from '../components/Pagination.jsx';
+import Reveal from '../components/Reveal.jsx';
 import { CardGridSkeleton, TextSkeleton } from '../components/Loader.jsx';
 import { SearchIcon, SparkleIcon, ArrowRight } from '../components/Icons.jsx';
 
@@ -197,6 +198,23 @@ export default function Discover() {
             </button>
           </form>
 
+          {stats && (
+            <dl className="hero__stats">
+              <div className="hero__stat">
+                <dt>Courses</dt>
+                <dd>{stats.total.toLocaleString()}+</dd>
+              </div>
+              <div className="hero__stat">
+                <dt>Free to start</dt>
+                <dd>{stats.free.toLocaleString()}</dd>
+              </div>
+              <div className="hero__stat">
+                <dt>Platforms</dt>
+                <dd>{stats.platforms}</dd>
+              </div>
+            </dl>
+          )}
+
           <div className="hero__popular">
             <span className="hero__popular-label">Popular:</span>
             {POPULAR.map((p) => (
@@ -211,6 +229,7 @@ export default function Discover() {
       {/* ---------- Explore / Results ---------- */}
       <section className="section section--tint" id="results">
         <div className="container">
+          <Reveal>
           <div className="section__head">
             <div>
               <span className="eyebrow">
@@ -306,6 +325,7 @@ export default function Discover() {
               )}
             </div>
           </div>
+          </Reveal>
 
           {loading ? (
             <CardGridSkeleton count={PAGE_SIZE} label="Loading courses…" />
@@ -363,6 +383,7 @@ export default function Discover() {
       {/* ---------- CTA ---------- */}
       <section className="section">
         <div className="container">
+          <Reveal>
           <div className="cta">
             <span className="cta__eyebrow">Not sure where to start?</span>
             <h2 className="cta__title">Get a learning path built around your goals.</h2>
@@ -379,6 +400,7 @@ export default function Discover() {
               </a>
             </div>
           </div>
+          </Reveal>
         </div>
       </section>
     </>

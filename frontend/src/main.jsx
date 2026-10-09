@@ -7,6 +7,7 @@ import Categories from './pages/Categories.jsx';
 import Saved from './pages/Saved.jsx';
 import AdminRedirect from './pages/AdminRedirect.jsx';
 import './index.css';
+import './legendary.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

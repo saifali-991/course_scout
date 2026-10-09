@@ -5,39 +5,44 @@
    ============================================================ */
 
 :root {
-  --blue: #1d6ff2;
-  --blue-dark: #1558c4;
-  --blue-soft: #eaf2fe;
-  --navy: #0f172a;
+  --blue: #2563eb;
+  --blue-dark: #1d4ed8;
+  --blue-soft: #e8effe;
+  --violet: #7c3aed;
+  --teal: #06b6d4;
+  --navy: #0b1226;
   --navy-2: #0b1029;
-  --slate: #64748b;
-  --slate-light: #94a3b8;
-  --bg: #f8faff;
+  --slate: #5b6b82;
+  --slate-light: #93a1b5;
+  --bg: #f6f8fd;
   --white: #ffffff;
-  --border: #e7edf6;
-  --teal: #22d3ee;
+  --border: #e6ebf5;
   --amber: #f59e0b;
   --red: #ef4444;
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
-  --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.08);
-  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.1);
+  --green: #10b981;
+  --shadow-sm: 0 1px 2px rgba(11, 18, 38, 0.05);
+  --shadow-md: 0 8px 24px -8px rgba(11, 18, 38, 0.12);
+  --shadow-lg: 0 24px 56px -20px rgba(11, 18, 38, 0.22);
+  --shadow-glow: 0 12px 40px -8px rgba(37, 99, 235, 0.45);
   --radius: 16px;
-  --radius-lg: 24px;
+  --radius-lg: 22px;
   --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
 
   /* ---------- semantic surfaces / text (light defaults) ---------- */
   --surface: #ffffff;
-  --surface-2: #f1f5fd;
-  --bg-hover: rgba(15, 23, 42, 0.04);
-  --text-2: #475569;
-  --tag-bg: #eef3fb;
-  --media-bg: #eaf2fe;
-  --footer-bg: #fbfcfe;
-  --panel-alt: #fbfcff;
-  --panel-alt-border: #e7edf6;
-  --border-strong: #d6e0f0;
-  --nav-bg: rgba(255, 255, 255, 0.88);
-  --backdrop: rgba(15, 23, 42, 0.55);
+  --surface-2: #eef3fb;
+  --glass: rgba(255, 255, 255, 0.72);
+  --bg-hover: rgba(11, 18, 38, 0.045);
+  --text-2: #45546c;
+  --tag-bg: #edf2fa;
+  --media-bg: #e7eefe;
+  --footer-bg: #f4f6fb;
+  --panel-alt: #f8faff;
+  --panel-alt-border: #e2e9f4;
+  --border-strong: #cfdaee;
+  --nav-bg: rgba(255, 255, 255, 0.78);
+  --backdrop: rgba(11, 18, 38, 0.55);
   --danger-bg: #fef2f2;
   --danger-border: #fecaca;
   --warn-bg: #fffbeb;
@@ -45,53 +50,59 @@
   --gold-bg: #fffbeb;
   --gold-text: #92400e;
   --gold-border: #fde68a;
-  --cta-text: #ffffff;
-  --badge-blue-border: #bfdbfe;
-  --focus-border: rgba(29, 111, 242, 0.5);
-  --focus-ring: rgba(29, 111, 242, 0.18);
+  --cta-text: #c9d4ea;
+  --badge-blue-border: #bfd7fe;
+  --focus-border: rgba(37, 99, 235, 0.55);
+  --focus-ring: rgba(37, 99, 235, 0.16);
   --chip-text: #334155;
   --scroll-thumb: #cbd5e1;
-  --accent-grad: linear-gradient(120deg, var(--blue) 10%, var(--teal) 90%);
-  --mark-grad: linear-gradient(135deg, var(--blue) 0%, #38bdf8 120%);
+  --accent-grad: linear-gradient(112deg, var(--blue) 5%, var(--violet) 55%, var(--teal) 100%);
+  --mark-grad: linear-gradient(135deg, #2563eb 0%, #7c3aed 105%);
   --hero-bg:
-    radial-gradient(60% 80% at 20% 0%, #e9f1ff 0%, rgba(233, 241, 255, 0) 70%),
-    radial-gradient(70% 90% at 85% 10%, #e8f6ff 0%, rgba(232, 246, 255, 0) 70%),
-    linear-gradient(180deg, #f5f9ff 0%, #ffffff 100%);
-  --hero-blob-a: rgba(29, 111, 242, 0.14);
-  --hero-blob-b: rgba(34, 211, 238, 0.13);
-  --cta-bg: var(--navy-2);
+    radial-gradient(55% 70% at 15% 0%, #e3ecff 0%, rgba(227, 236, 255, 0) 65%),
+    radial-gradient(55% 70% at 85% 5%, #e2e2ff 0%, rgba(226, 226, 255, 0) 65%),
+    linear-gradient(180deg, #f4f7fe 0%, #ffffff 100%);
+  --hero-grid: rgba(37, 99, 235, 0.07);
+  --hero-blob-a: rgba(37, 99, 235, 0.16);
+  --hero-blob-b: rgba(124, 58, 237, 0.13);
+  --cta-bg: linear-gradient(128deg, #0b1029 0%, #14234d 60%, #1d2c68 100%);
   --skeleton-shine: rgba(255, 255, 255, 0.65);
 }
 
 /* ---------- dark theme ---------- */
 [data-theme='dark'] {
-  --blue: #4d8ef7;
-  --blue-dark: #2f6fed;
-  --blue-soft: rgba(77, 142, 247, 0.16);
-  --navy: #e9eefb;
+  --blue: #5b93ff;
+  --blue-dark: #3b77f6;
+  --blue-soft: rgba(91, 147, 255, 0.16);
+  --violet: #a78bfa;
+  --teal: #22d3ee;
+  --navy: #ecf1fd;
   --navy-2: #0b1224;
-  --slate: #94a3b8;
-  --slate-light: #7d8ca6;
-  --bg: #0d1526;
-  --white: #141d33;
-  --border: #253252;
+  --slate: #9aa8c4;
+  --slate-light: #7888a5;
+  --bg: #0a1120;
+  --white: #131c33;
+  --border: #233150;
   --red: #f87171;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
-  --shadow-lg: 0 14px 36px rgba(0, 0, 0, 0.55);
+  --green: #34d399;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 10px 28px -10px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 28px 64px -22px rgba(0, 0, 0, 0.7);
+  --shadow-glow: 0 12px 44px -8px rgba(91, 147, 255, 0.5);
 
-  --surface: #141d33;
-  --surface-2: #1c2742;
+  --surface: #131c33;
+  --surface-2: #1b2742;
+  --glass: rgba(19, 28, 51, 0.72);
   --bg-hover: rgba(148, 163, 184, 0.1);
-  --text-2: #a3b0cb;
-  --tag-bg: #22304f;
-  --media-bg: #1a2440;
-  --footer-bg: #0a0f1e;
-  --panel-alt: #0f1830;
-  --panel-alt-border: #2b3a5c;
-  --border-strong: #3b4a6b;
-  --nav-bg: rgba(11, 17, 32, 0.82);
-  --backdrop: rgba(2, 6, 18, 0.7);
+  --text-2: #a5b3cf;
+  --tag-bg: #21304f;
+  --media-bg: #1a2543;
+  --footer-bg: #070c18;
+  --panel-alt: #0e1730;
+  --panel-alt-border: #2a3a5e;
+  --border-strong: #3a4c70;
+  --nav-bg: rgba(9, 15, 30, 0.78);
+  --backdrop: rgba(2, 6, 18, 0.72);
   --danger-bg: rgba(248, 113, 113, 0.12);
   --danger-border: rgba(248, 113, 113, 0.35);
   --warn-bg: rgba(245, 158, 11, 0.14);
@@ -99,20 +110,23 @@
   --gold-bg: rgba(245, 158, 11, 0.14);
   --gold-text: #fcd34d;
   --gold-border: rgba(245, 158, 11, 0.35);
-  --cta-text: #e9eefb;
+  --cta-text: #c4cfe8;
   --badge-blue-border: rgba(96, 165, 250, 0.35);
-  --focus-border: rgba(96, 165, 250, 0.5);
-  --focus-ring: rgba(77, 142, 247, 0.25);
-  --chip-text: #cdd8ec;
+  --focus-border: rgba(91, 147, 255, 0.55);
+  --focus-ring: rgba(91, 147, 255, 0.25);
+  --chip-text: #cfdaef;
   --scroll-thumb: #33445f;
-  --skeleton-shine: rgba(255, 255, 255, 0.08);
+  --skeleton-shine: rgba(255, 255, 255, 0.07);
+  --accent-grad: linear-gradient(112deg, #5b93ff 5%, #a78bfa 55%, #22d3ee 100%);
+  --mark-grad: linear-gradient(135deg, #5b93ff 0%, #a78bfa 105%);
   --hero-bg:
-    radial-gradient(60% 80% at 20% 0%, rgba(29, 111, 242, 0.2) 0%, rgba(29, 111, 242, 0) 70%),
-    radial-gradient(70% 90% at 85% 10%, rgba(34, 211, 238, 0.14) 0%, rgba(34, 211, 238, 0) 70%),
-    linear-gradient(180deg, #0d1526 0%, #0b1120 100%);
-  --hero-blob-a: rgba(77, 142, 247, 0.22);
-  --hero-blob-b: rgba(34, 211, 238, 0.16);
-  --cta-bg: linear-gradient(135deg, #0b1224 0%, #16264c 100%);
+    radial-gradient(55% 70% at 15% 0%, rgba(91, 147, 255, 0.2) 0%, rgba(91, 147, 255, 0) 65%),
+    radial-gradient(55% 70% at 85% 5%, rgba(167, 139, 250, 0.16) 0%, rgba(167, 139, 250, 0) 65%),
+    linear-gradient(180deg, #0a1120 0%, #080d1a 100%);
+  --hero-grid: rgba(148, 163, 184, 0.09);
+  --hero-blob-a: rgba(91, 147, 255, 0.24);
+  --hero-blob-b: rgba(167, 139, 250, 0.18);
+  --cta-bg: linear-gradient(128deg, #070c1c 0%, #101c42 60%, #1b2c68 100%);
 }
 
 /* Theme-switch window (~400ms, class added by useTheme): colors cross-fade. */
@@ -1421,124 +1435,4 @@ img { display: block; max-width: 100%; }
 
 
 
-/* ============================================================
-   POLISH - hero glow, premium details, theme toggle
-   ============================================================ */
-
-/* Content must paint above the animated hero blobs. */
-.hero > * { position: relative; z-index: 1; }
-
-/* Floating glow blobs behind the hero (theme-aware colours). */
-.hero::before,
-.hero::after {
-  content: '';
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(30px);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.hero::before {
-  width: 460px;
-  height: 460px;
-  top: -180px;
-  left: -120px;
-  background: radial-gradient(circle, var(--hero-blob-a) 0%, transparent 65%);
-  animation: hero-drift 16s ease-in-out infinite alternate;
-}
-
-.hero::after {
-  width: 420px;
-  height: 420px;
-  top: -120px;
-  right: -140px;
-  background: radial-gradient(circle, var(--hero-blob-b) 0%, transparent 65%);
-  animation: hero-drift 20s ease-in-out infinite alternate-reverse;
-}
-
-@keyframes hero-drift {
-  to { transform: translate(70px, 50px) scale(1.12); }
-}
-
-/* Gradient headline accent - premium in both themes. */
-.hero__title .accent {
-  background: var(--accent-grad);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Logo mark gets the same gradient energy. */
-.brand__mark { background: var(--mark-grad); }
-
-/* Thumbnails zoom gently on card hover. */
-.card__img { transition: transform 0.4s ease; }
-.card:hover .card__img { transform: scale(1.06); }
-
-/* Card borders warm up on hover (both themes). */
-.card:hover,
-.catcard:hover { border-color: var(--border-strong); }
-
-/* Satisfying press feedback on buttons. */
-.btn:active { transform: translateY(0) scale(0.98); }
-
-/* Keyboard focus ring - visible everywhere. */
-:focus-visible {
-  outline: 2px solid var(--blue);
-  outline-offset: 2px;
-}
-
-/* Themed selection + scrollbars. */
-::selection {
-  background: rgba(29, 111, 242, 0.25);
-  color: var(--navy);
-}
-
-* { scrollbar-width: thin; scrollbar-color: var(--scroll-thumb) transparent; }
-
-::-webkit-scrollbar { width: 10px; height: 10px; }
-
-::-webkit-scrollbar-thumb {
-  background: var(--scroll-thumb);
-  border-radius: 999px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
-}
-
-::-webkit-scrollbar-track { background: transparent; }
-
-/* ---------------- Navbar: theme toggle ---------------- */
-
-.nav__theme {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  display: grid;
-  place-items: center;
-  color: var(--text-2);
-  transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
-}
-
-.nav__theme:hover {
-  color: var(--blue);
-  border-color: var(--border-strong);
-  background: var(--bg-hover);
-}
-
-.nav__theme svg { animation: theme-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
-
-@keyframes theme-pop {
-  from { transform: rotate(-90deg) scale(0.5); opacity: 0; }
-  to { transform: rotate(0) scale(1); opacity: 1; }
-}
-
-[data-theme='dark'] .btn--white { border: 1px solid var(--border-strong); }
-
-@media (prefers-reduced-motion: reduce) {
-  .hero::before, .hero::after { animation: none; }
-  .nav__theme svg { animation: none; }
-  .card__img { transition: none; }
-}
+/* (Legendary layer: see legendary.css — hero staging, glass, reveal.) */
