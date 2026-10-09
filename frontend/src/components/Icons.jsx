@@ -179,3 +179,16 @@ export const PythonIcon = ({ size = 22, ...props }) => (
     <path d="M12.1 22c2.6 0 4.4-1.1 4.4-3v-2.3h-4.6v-.8h6.5c1.9 0 3.6-1.3 3.6-3.9 0-2.6-1.5-4-3.4-4h-1.9v2.5c0 1.9-1.7 3.4-3.7 3.4H8.5c-1.7 0-3 1.3-3 3V19c0 1.9 1.8 3 4.5 3h2.1zm1.6-1.8a.9.9 0 1 1 0-1.8.9.9 0 0 1 0 1.8z" opacity=".55" />
   </svg>
 );
+
+export const SunIcon = ({ size = 20, ...props }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" {...base} {...props}>
+    <circle cx="12" cy="12" r="4.2" />
+    <path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M19.1 4.9l-1.6 1.6M6.5 17.5l-1.6 1.6" />
+  </svg>
+);
+
+export const MoonIcon = ({ size = 20, ...props }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" {...base} {...props}>
+    <path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z" />
+  </svg>
+);

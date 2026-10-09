@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
     <meta
       name="description"
       content="CourseScout — Compare the best free and paid courses from trusted universities, creators, and learning platforms. Find your next skill without the endless searching."
@@ -17,6 +18,21 @@
     <title>CourseScout — Every course on the internet, in one place.</title>
   </head>
   <body>
+
+    <!-- Apply the saved theme before first paint (no white flash in dark mode). -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('coursescout:theme');
+          if (t !== 'light' && t !== 'dark') {
+            t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', t);
+        } catch (e) { /* private mode etc. - stay light */ }
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

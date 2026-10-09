@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { PlayIcon } from './Icons.jsx';
+import { MoonIcon, PlayIcon, SunIcon } from './Icons.jsx';
 import AuthModal from './AuthModal.jsx';
 import useAuth from '../hooks/useAuth.js';
+import useTheme from '../hooks/useTheme.js';
 
 const links = [
   { to: '/', label: 'Discover' },
@@ -15,6 +16,7 @@ export default function Navbar() {
   // null = closed, 'login' | 'register' = which AuthModal tab to show
   const [authTab, setAuthTab] = useState(null);
   const { user, isAuthenticated, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const closeMenu = () => setOpen(false);
 
@@ -112,7 +114,16 @@ export default function Navbar() {
                 Join free
               </button>
             </>
-          )}
+          )}          <button
+            type="button"
+            className="nav__theme"
+            onClick={toggleTheme}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+          >
+            {theme === 'dark' ? <SunIcon size={19} /> : <MoonIcon size={17} />}
+          </button>
+
           <button
             className="nav__burger"
             aria-label="Toggle menu"
