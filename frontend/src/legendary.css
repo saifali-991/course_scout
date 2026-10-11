@@ -51,6 +51,97 @@ body {
     var(--surface);
 }
 
+/* ============================================================
+   Full-screen looping background video (behind all content)
+   - Fixed + z-index:-1 so it never covers or blocks the UI.
+   - object-fit: cover so it fills any viewport without distortion.
+   - The browser downloads it once and loops from cache → Cloudinary
+     gets a single request per page load.
+   ============================================================ */
+.bg-video {
+  position: fixed;
+  top: 60px; /* clear the sticky navbar so the video's top text ("learn …") shows */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--surface); /* fallback colour until the video loads */
+}
+
+.bg-video__el {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Phone clip on small / short viewports: show it whole (no crop). The JS sizes
+   the element to the largest centred rectangle that fits; when it can't fill
+   the screen the .is-framed class adds a decorative border on all four sides. */
+.bg-video__el--phone {
+  object-fit: contain;
+  border-radius: 18px;
+}
+
+.bg-video__el.is-framed {
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.7),
+    0 0 0 7px rgba(37, 99, 235, 0.38),
+    0 26px 64px -18px rgba(11, 18, 38, 0.55);
+}
+
+[data-theme='dark'] .bg-video__el.is-framed {
+  box-shadow:
+    0 0 0 3px rgba(226, 232, 240, 0.55),
+    0 0 0 7px rgba(91, 147, 255, 0.42),
+    0 26px 64px -18px rgba(0, 0, 0, 0.85);
+}
+
+/* translucent scrim so text over the video stays readable */
+.bg-video__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(246, 248, 253, 0.30) 0%,
+    rgba(246, 248, 253, 0.48) 45%,
+    rgba(246, 248, 253, 0.62) 100%
+  );
+}
+
+[data-theme='dark'] .bg-video__scrim {
+  background: linear-gradient(
+    180deg,
+    rgba(11, 18, 38, 0.42) 0%,
+    rgba(11, 18, 38, 0.58) 45%,
+    rgba(11, 18, 38, 0.72) 100%
+  );
+}
+
+/* honour reduced-motion: hide the video, keep the calm static backdrop */
+@media (prefers-reduced-motion: reduce) {
+  .bg-video__el {
+    display: none;
+  }
+}
+
+/* let the background video show through the hero (translucent tints) */
+.hero {
+  background:
+    radial-gradient(55% 70% at 15% 0%, rgba(37, 99, 235, 0.12) 0%, rgba(37, 99, 235, 0) 65%),
+    radial-gradient(55% 70% at 85% 5%, rgba(124, 58, 237, 0.10) 0%, rgba(124, 58, 237, 0) 65%);
+}
+
+[data-theme='dark'] .hero {
+  background:
+    radial-gradient(55% 70% at 15% 0%, rgba(91, 147, 255, 0.16) 0%, rgba(91, 147, 255, 0) 65%),
+    radial-gradient(55% 70% at 85% 5%, rgba(167, 139, 250, 0.13) 0%, rgba(167, 139, 250, 0) 65%);
+}
+
 /* ---------- navbar: true glass ---------- */
 .navbar {
   background: var(--nav-bg);
